@@ -1,0 +1,23 @@
+{
+    "name": "LetGo - Release Your Thoughts",
+    "short_name": "LetGo",
+    "description": "A ritual for emotional release. Write what you want to let go, then burn it.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a12",
+    "theme_color": "#ff6600",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/flame.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "lifestyle",
+        "health",
+        "wellness"
+    ]
+}
