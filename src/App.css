@@ -302,21 +302,109 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Responsive
+   Responsive - Tablet
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .prompt-suggestions {
+    max-width: 90vw;
+    gap: 8px;
+  }
+
+  .prompt-chip {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Responsive - Mobile
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 480px) {
   .prompt-suggestions {
-    top: -80px;
-    padding: 0 16px;
+    top: 15px;
+    padding: 0 12px;
+    gap: 6px;
+    max-width: 100%;
   }
 
   .prompt-chip {
     font-size: 10px;
     padding: 5px 10px;
+    border-radius: 12px;
   }
 
   .keyboard-hint {
     display: none;
+  }
+
+  .history-counter {
+    top: auto;
+    bottom: 15px;
+    left: 15px;
+    font-size: 11px;
+  }
+
+  .sound-toggle {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .writing-area {
+    top: 45%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Responsive - Small Mobile
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 360px) {
+  .prompt-suggestions {
+    top: 12px;
+    padding: 0 10px;
+    gap: 5px;
+  }
+
+  .prompt-chip {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+
+  .history-counter {
+    font-size: 10px;
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .sound-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    top: 12px;
+    right: 12px;
+  }
+
+  .writing-area {
+    top: 42%;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .prompt-chip {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sound-toggle {
+    min-width: 44px;
+    min-height: 44px;
   }
 }

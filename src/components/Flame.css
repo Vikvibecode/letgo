@@ -569,3 +569,68 @@
         transform: translateX(-50%) scale(1.4);
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Mobile Responsive Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+    .flame-container {
+        padding-bottom: 5px;
+    }
+
+    .flame-wrapper {
+        width: 160px;
+        height: 200px;
+        transform: scale(0.85);
+    }
+
+    .flame-hint {
+        font-size: 11px;
+        margin-top: 8px;
+    }
+
+    .campfire-base {
+        width: 150px;
+        height: 50px;
+    }
+
+    .fire {
+        width: 120px;
+        height: 150px;
+    }
+
+    .main-fire {
+        width: 60px;
+        height: 100px;
+    }
+
+    .flame-glow {
+        width: 160px;
+        height: 80px;
+    }
+}
+
+@media (max-width: 360px) {
+    .flame-wrapper {
+        width: 140px;
+        height: 180px;
+        transform: scale(0.75);
+    }
+
+    .flame-hint {
+        font-size: 10px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .flame-container {
+        /* Ensure hint is always visible on touch devices */
+        padding-bottom: 8px;
+    }
+
+    .flame-hint {
+        opacity: 0.6;
+    }
+}

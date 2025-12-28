@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { useDrag } from '@use-gesture/react';
 import './PaperCard.css';
 
@@ -15,6 +15,22 @@ export default function PaperCard({
   const cardRef = useRef(null);
   const textareaRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isNearFlame, setIsNearFlame] = useState(false);
+  const [showFirstTimeHint, setShowFirstTimeHint] = useState(false);
+
+  // Check for first-time user
+  useEffect(() => {
+    const hasSeenHint = localStorage.getItem('letgo-drag-hint-seen');
+    if (!hasSeenHint) {
+      setShowFirstTimeHint(true);
+      // Auto-hide after 5 seconds
+      const timer = setTimeout(() => {
+        setShowFirstTimeHint(false);
+        localStorage.setItem('letgo-drag-hint-seen', 'true');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Motion values for drag
   const x = useMotionValue(0);
@@ -45,24 +61,34 @@ export default function PaperCard({
     return cardBottom > flameTop && cardY > 80;
   };
 
-  // Drag gesture
+  // Drag gesture with improved touch handling
   const bind = useDrag(
-    ({ active, movement: [mx, my] }) => {
+    ({ active, movement: [mx, my], velocity: [vx, vy], direction: [dx, dy] }) => {
       if (disabled) return;
 
       setIsDragging(active);
+
+      // Hide first-time hint when user starts dragging
+      if (active && showFirstTimeHint) {
+        setShowFirstTimeHint(false);
+        localStorage.setItem('letgo-drag-hint-seen', 'true');
+      }
 
       if (active) {
         x.set(mx);
         y.set(my);
         onDragStart?.();
 
-        if (checkFlameCollision(my)) {
+        const nearFlame = checkFlameCollision(my);
+        setIsNearFlame(nearFlame);
+
+        if (nearFlame) {
           onDragEnd?.(true);
         } else {
           onDragEnd?.(false);
         }
       } else {
+        setIsNearFlame(false);
         if (checkFlameCollision(my) && value.trim().length > 0) {
           onBurn?.();
         } else {
@@ -76,13 +102,16 @@ export default function PaperCard({
       from: () => [x.get(), y.get()],
       filterTaps: true,
       rubberband: true,
+      // Improved touch settings
+      pointer: { touch: true },
+      threshold: 5,
     }
   );
 
   return (
     <motion.div
       ref={cardRef}
-      className={`paper-card ${isDragging ? 'dragging' : ''}`}
+      className={`paper-card ${isDragging ? 'dragging' : ''} ${isNearFlame ? 'near-flame' : ''}`}
       style={{
         x: springX,
         y: springY,
@@ -128,10 +157,55 @@ export default function PaperCard({
           aria-describedby="drag-hint"
         />
 
+        {/* Static drag hint */}
         {!isDragging && value.length === 0 && (
-          <span id="drag-hint" className="drag-hint">Drag into the fire to release</span>
+          <span id="drag-hint" className="drag-hint">
+            <span className="drag-hint-icon">↓</span>
+            Drag to fire to release
+          </span>
         )}
       </div>
+
+      {/* Drag handle indicator at bottom */}
+      <div className={`drag-handle ${showFirstTimeHint ? 'pulse' : ''}`} aria-hidden="true">
+        <div className="drag-handle-grip">
+          <span className="grip-line" />
+          <span className="grip-line" />
+          <span className="grip-line" />
+        </div>
+      </div>
+
+      {/* First-time user tooltip */}
+      <AnimatePresence>
+        {showFirstTimeHint && (
+          <motion.div
+            className="first-time-tooltip"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="tooltip-arrow">↓</span>
+            Drag this note into the fire below
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Direction arrow when dragging */}
+      <AnimatePresence>
+        {isDragging && (
+          <motion.div
+            className="drag-direction-arrow"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <span className={`direction-arrow ${isNearFlame ? 'near-flame' : ''}`}>
+              ↓
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

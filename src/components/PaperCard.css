@@ -13,6 +13,7 @@
     user-select: none;
     transform-style: preserve-3d;
     perspective: 1000px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
 
     /* Torn edge on right side using clip-path */
     clip-path: polygon(
@@ -127,7 +128,7 @@
 
 .paper-content {
     position: relative;
-    padding: 25px 30px 30px 50px;
+    padding: 25px 30px 50px 50px;
     min-height: 300px;
     z-index: 2;
 }
@@ -141,7 +142,7 @@
     top: 25px;
     left: 45px;
     right: 25px;
-    bottom: 25px;
+    bottom: 50px;
     pointer-events: none;
     background: repeating-linear-gradient(to bottom,
             transparent 0px,
@@ -159,7 +160,7 @@
 .paper-textarea {
     position: relative;
     width: 100%;
-    min-height: 240px;
+    min-height: 200px;
     background: transparent;
     border: none;
     resize: none;
@@ -179,25 +180,192 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Drag Hint
+   Drag Handle Indicator - Bottom of Card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.drag-handle {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-handle-grip {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+}
+
+.grip-line {
+    width: 32px;
+    height: 3px;
+    background: rgba(60, 80, 80, 0.25);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.drag-handle:hover .grip-line {
+    background: rgba(60, 80, 80, 0.4);
+}
+
+/* Pulsing animation for first-time users */
+.drag-handle.pulse {
+    animation: pulseHandle 1.5s ease-in-out infinite;
+}
+
+.drag-handle.pulse .grip-line {
+    background: rgba(255, 120, 50, 0.5);
+}
+
+@keyframes pulseHandle {
+
+    0%,
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Drag Hint with Icon
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .drag-hint {
     position: absolute;
-    bottom: 18px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     font-family: var(--font-sans);
-    font-size: 11px;
-    color: rgba(60, 80, 80, 0.4);
+    font-size: 12px;
+    color: rgba(60, 80, 80, 0.5);
     text-align: center;
     z-index: 5;
     white-space: nowrap;
     padding-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.drag-hint-icon {
+    font-size: 14px;
+    animation: bounceArrow 1s ease-in-out infinite;
+}
+
+@keyframes bounceArrow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(4px);
+    }
 }
 
 .paper-card:active .drag-hint {
     opacity: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   First-Time User Tooltip
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.first-time-tooltip {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 100, 50, 0.95);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(255, 100, 50, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.first-time-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(255, 100, 50, 0.95);
+}
+
+.tooltip-arrow {
+    animation: bounceArrow 0.8s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Direction Arrow When Dragging
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.drag-direction-arrow {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.direction-arrow {
+    font-size: 28px;
+    color: rgba(255, 150, 80, 0.8);
+    animation: pointDown 0.6s ease-in-out infinite;
+    display: block;
+    text-shadow: 0 0 10px rgba(255, 150, 80, 0.5);
+}
+
+.direction-arrow.near-flame {
+    color: #ff6600;
+    text-shadow: 0 0 15px rgba(255, 100, 0, 0.8);
+    animation: pointDownExcited 0.3s ease-in-out infinite;
+}
+
+@keyframes pointDown {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(6px);
+    }
+}
+
+@keyframes pointDownExcited {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(8px) scale(1.2);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -221,7 +389,161 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .paper-card.dragging {
+    cursor: grabbing;
     box-shadow:
         0 12px 30px rgba(0, 0, 0, 0.2),
         0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.paper-card.dragging .drag-handle {
+    opacity: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Near Flame State - Glowing Effect
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.paper-card.near-flame {
+    box-shadow:
+        0 0 20px rgba(255, 120, 50, 0.4),
+        0 0 40px rgba(255, 100, 0, 0.3),
+        0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.paper-card.near-flame::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 4px;
+    background: linear-gradient(45deg,
+            rgba(255, 150, 50, 0.3),
+            rgba(255, 100, 0, 0.2),
+            rgba(255, 150, 50, 0.3));
+    z-index: -1;
+    animation: glowBorder 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes glowBorder {
+    0% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Mobile Responsive Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+    .paper-card {
+        width: min(92vw, 360px);
+        min-height: 260px;
+    }
+
+    .paper-content {
+        padding: 20px 24px 45px 42px;
+        min-height: 260px;
+    }
+
+    .paper-lines {
+        left: 38px;
+        right: 20px;
+        bottom: 45px;
+    }
+
+    .paper-textarea {
+        font-size: 18px;
+        line-height: 24px;
+        min-height: 170px;
+    }
+
+    .spiral-holes {
+        width: 30px;
+        padding: 12px 0;
+    }
+
+    .spiral-hole {
+        width: 12px;
+        height: 12px;
+    }
+
+    .drag-handle {
+        bottom: 6px;
+        padding: 6px 12px;
+    }
+
+    .grip-line {
+        width: 28px;
+        height: 3px;
+    }
+
+    .drag-hint {
+        font-size: 11px;
+        bottom: 26px;
+    }
+
+    .first-time-tooltip {
+        font-size: 12px;
+        padding: 8px 14px;
+        bottom: -45px;
+    }
+
+    .direction-arrow {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 360px) {
+    .paper-card {
+        width: 95vw;
+        min-height: 240px;
+    }
+
+    .paper-content {
+        padding: 16px 20px 40px 38px;
+        min-height: 240px;
+    }
+
+    .paper-textarea {
+        font-size: 16px;
+        min-height: 150px;
+    }
+
+    .spiral-holes {
+        width: 28px;
+    }
+
+    .spiral-hole {
+        width: 10px;
+        height: 10px;
+    }
+
+    .drag-hint {
+        font-size: 10px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .paper-card {
+        /* Larger touch target */
+        min-height: 280px;
+    }
+
+    .drag-handle {
+        padding: 12px 20px;
+    }
+
+    .grip-line {
+        width: 36px;
+        height: 4px;
+    }
+
+    .paper-textarea {
+        /* Prevent zoom on focus for iOS */
+        font-size: max(18px, 16px);
+    }
 }
